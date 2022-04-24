@@ -73,7 +73,7 @@ const details = () => ({
     inputUI: {
       type: 'text',
     },
-    tooltip: 'The pixel format to use. \n"yuv420p10le" for HEVC (x265) 10bit and "rgb24" for x264 8bit. \nCheck FFMPEG documentation for more info: not sure, check google lol.'
+    tooltip: 'The pixel format to use. \n"yuv420p10le" for HEVC (x265) 10bit and "rgb24" or "yuv420p" for x264 8bit. \nCheck FFMPEG documentation for more info: not sure, check google lol.'
   },
   // Set the audio codec to use for transcoding
   {
