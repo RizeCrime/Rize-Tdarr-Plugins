@@ -5,7 +5,7 @@
 
 /* eslint-disable */
 const details = () => ({
-  id: 'Tdarr_Plugin_RizeComplete',
+  id: 'Tdarr_Plugin_Rize-All-in-One',
   Stage: 'Pre-processing',
   Name: 'Rize\' All-in-One',
   Type: 'Video',
