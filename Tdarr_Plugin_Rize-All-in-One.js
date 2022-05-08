@@ -59,7 +59,7 @@ const details = () => ({
   {
     name: 'videoCodecParams',
     type: 'string',
-    defaultValue: '-x265-params aq-mode=3',
+    defaultValue: '',
     inputUI: {
       type: 'text',
     },
@@ -196,6 +196,8 @@ const plugin = (file, librarySettings, inputs, otherArguments) => {
     subtitleArgs = '';
     response.infoLog += 'No subtitles will be added to the output. \n';
   };
+
+  // TODO: add "-x265-params aq-mode=3" as default encoder args when none are provided
 
   // define encoding arg chunks
   var encodingArgsBaseStart = '-hwaccel auto <io> -analyzeduration 6000M -probesize 2147M -map 0:v:0 -c:V ';
