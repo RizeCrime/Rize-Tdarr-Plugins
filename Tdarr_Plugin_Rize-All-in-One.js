@@ -59,7 +59,7 @@ const details = () => ({
   {
     name: 'videoCodecParams',
     type: 'string',
-    defaultValue: '',
+    defaultValue: '-x265-params aq-mode=3',
     inputUI: {
       type: 'text',
     },
@@ -95,6 +95,16 @@ const details = () => ({
     },
     tooltip: 'Comma separated list of subtitle languages to keep. "all" will keep all languages, empty or "none" will remove all subtitles.'
   },
+  // specify whether to remove forced flag from subtitles
+  {
+    name: 'clearForcedFlag',
+    type: 'boolean',
+    defaultValue: true,
+    inputUI: {
+      type: 'checkbox',
+    },
+    tooltip: 'Remove forced flag from subtitles. This is enabled by default and highly recommended as Plex will transcode any video file with forced subtitles.'
+  },
   // Set the resolution limit for the output
   {
     name: 'resolutionLimit',
@@ -105,15 +115,15 @@ const details = () => ({
     },
     tooltip: 'The maximum resolution to use for the x265 preset. 0 = no limit. Uses image width, not height!'
   },
-  // specify wether to check final file size or not
+  // specify wether to replace the original file if the output is smaller
   {
-    name: 'forceTranscode',
+    name: 'forceReplace',
     type: 'boolean',
     defaultValue: false,
     inputUI: {
       type: 'checkbox',
     },
-    tooltip: 'Force transcoding even if the resulting file size is larger than the original.'
+    tooltip: 'Replace original file, even if the newly transcoded file is larger. .'
   }
   ],
 });
@@ -156,8 +166,8 @@ const plugin = (file, librarySettings, inputs, otherArguments) => {
     response.processFile = false;
     response.infoLog += 'File has already been processed, skipping... \n';
 
-    // if forceTranscode if false
-    if (!inputs.forceTranscode) {
+    // if forceReplace is false
+    if (!inputs.forceReplace) {
     // check if new file is larger than original
       var oldSize = parseFloat(otherArguments.originalLibraryFile.file_size);
       var newSize = parseFloat(file.file_size);
@@ -196,12 +206,21 @@ const plugin = (file, librarySettings, inputs, otherArguments) => {
     subtitleArgs = '';
     response.infoLog += 'No subtitles will be added to the output. \n';
   };
+  // if clearForcedFlag is true, add -disposition:s:0 0 to final subtitle args
+  if (inputs.clearForcedFlag) {
+    subtitleArgs += '-disposition:s:0 0 ';
+  };
 
-  // TODO: add "-x265-params aq-mode=3" as default encoder args when none are provided
+  // for unknown reasons tdarr uses the default option, even when the input field is empty
+  // since the default value is specific to hevc/x265 encoding I need to make an extra special, super duper, shiny check here :)
+  var codecParams = '';
+  if (inputs.videoCodecParams !== '') {
+    codecParams = inputs.videoCodecParams;
+  };
 
   // define encoding arg chunks
   var encodingArgsBaseStart = '-hwaccel auto <io> -analyzeduration 6000M -probesize 2147M -map 0:v:0 -c:V ';
-  var encodingArgsVideoQuality = `${inputs.videoEncoder} ${inputs.videoCodecParams} -preset slow -rc constqp -qp ${inputs.qpValue} -profile:v ${inputs.encoderProfile} -pix_fmt ${inputs.pix_fmt} `;
+  var encodingArgsVideoQuality = `${inputs.videoEncoder} ${codecParams} -preset slow -rc constqp -qp ${inputs.qpValue} -profile:v ${inputs.encoderProfile} -pix_fmt ${inputs.pix_fmt} `;
   var encodingArgsVideoResolution = `-vf scale=${inputs.resolutionLimit}:-1 `;
   var encodingArgsAudio = `-map 0:a? -c:a ${inputs.audioCodec} `;
   var encodingArgsSubtitles = `${subtitleArgs} -c:s copy `;
