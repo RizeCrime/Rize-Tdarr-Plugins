@@ -39,7 +39,7 @@ const details = () => ({
   {
     name: 'qpValue',
     type: 'number',
-    defaultValue: 24,
+    defaultValue: 23,
     inputUI: {
       type: 'text',
     },
