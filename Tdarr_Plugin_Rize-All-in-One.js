@@ -25,6 +25,16 @@ const details = () => ({
     },
     tooltip: 'Custom Tag to be added to file. A tag is required to set an exit condition, otherwise Tdarr will keep processing the file indefinitely.',
   },
+  // file format
+  {
+    name: 'fileFormat',
+    type: 'string',
+    defaultValue: 'mkv',
+    inputUI: {
+      type: 'text',
+    },
+    tooltip: 'Output file format. (.mkv, .mp4, ...)',
+  },
   // Set the video encoder to use for transcoding
   {
     name: 'videoEncoder',
@@ -244,6 +254,9 @@ const plugin = (file, librarySettings, inputs, otherArguments) => {
 
   response.preset = encodingArgs;
   response.infoLog += 'Starting to process. \n';
+
+  // set output file format
+  response.container = inputs.fileFormat;
 
   return response
 };
