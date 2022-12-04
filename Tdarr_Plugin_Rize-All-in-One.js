@@ -234,7 +234,7 @@ const plugin = (file, librarySettings, inputs, otherArguments) => {
   var encodingArgsVideoResolution = `-vf scale=${inputs.resolutionLimit}:-1 `;
   var encodingArgsAudio = `-map 0:a? -c:a ${inputs.audioCodec} `;
   var encodingArgsSubtitles = `${subtitleArgs} -c:s copy `;
-  var encodingArgsCustomTag = `-metadata ${inputs.customTag}=1 -movflags +use_metadata_tags `;
+  var encodingArgsCustomTag = `-metadata ${inputs.customTag.toUpperCase()}=1 -movflags +use_metadata_tags `;
   var encodingArgsBaseEnd = `-max_muxing_queue_size 4096`;  // 4096 should save on gpu memory
 
   // construct encoding args
